@@ -7,14 +7,25 @@ function createMainWindow() {
     title: 'My Electron App',
     width: 800,
     height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
+     }
   });
 
-  const startUrl = url.format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file',
-  })
-
-  mainWindow.loadURL(startUrl);
+  mainWindow.loadFile(path.join(__dirname, './app/dist/index.html'))
 }
 
 app.whenReady().then(createMainWindow);
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createMainWindow();
+  }
+});
